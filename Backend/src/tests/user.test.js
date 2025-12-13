@@ -46,3 +46,52 @@ describe("Auth API - Register User", () => {
     expect(res.body.message).toBe("Email already exists");
   });
 });
+
+
+describe("Auth API - Login User", () => {
+  test("should login with correct credentials and return token", async () => {
+    // create a user manually for login test
+    const userData = {
+      name: "Login User",
+      email: "login@example.com",
+      password: "password123",
+    };
+
+    await request(app).post("/api/auth/register").send(userData);
+
+    const res = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "login@example.com",
+        password: "password123",
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("token");
+    expect(res.body.user.email).toBe("login@example.com");
+  });
+
+  test("should NOT login with wrong password", async () => {
+    const res = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "login@example.com",
+        password: "wrongpass",
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Invalid email or password");
+  });
+
+  test("should NOT login with unregistered email", async () => {
+    const res = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "no-account@example.com",
+        password: "password123",
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Invalid email or password");
+  });
+});
