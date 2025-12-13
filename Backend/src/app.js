@@ -9,4 +9,3 @@ app.get("/ping", (req, res) => {
 
 export default app;
 
-// Additional code for server setup and other routes would go here
