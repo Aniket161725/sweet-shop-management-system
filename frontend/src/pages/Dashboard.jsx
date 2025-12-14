@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
+
 import SweetGrid from "../components/sweets/SweetGrid";
 import SweetPagination from "../components/sweets/SweetPagination";
 import SweetFilter from "../components/sweets/SweetFilters";
 import AddSweet from "../components/sweets/AddSweet";
 import UpdateSweet from "../components/sweets/UpdateSweet";
-import DeleteSweet from "../components/sweets/DeleteSweet";
-import RestockSweet from "../components/sweets/RestockSweet";
 
 import useSweets from "../hooks/useSweets";
 
@@ -23,6 +22,7 @@ const Dashboard = () => {
   const [sweets, setSweets] = useState([]);
   const [editingSweet, setEditingSweet] = useState(null);
 
+  // hook for pagination + client-side slicing
   const {
     page,
     currentSweets,
@@ -35,7 +35,7 @@ const Dashboard = () => {
   } = useSweets(sweets);
 
   // ----------------------------
-  // 1) LOAD SWEETS FROM BACKEND
+  // LOAD SWEETS FROM BACKEND
   // ----------------------------
   const loadSweets = async () => {
     try {
@@ -52,7 +52,7 @@ const Dashboard = () => {
   }, []);
 
   // ----------------------------
-  // 2) ADD SWEET
+  // ADD SWEET
   // ----------------------------
   const handleAddSweet = async (data) => {
     try {
@@ -66,7 +66,7 @@ const Dashboard = () => {
   };
 
   // ----------------------------
-  // 3) UPDATE SWEET
+  // UPDATE SWEET
   // ----------------------------
   const handleUpdateSweet = async (updated) => {
     try {
@@ -85,12 +85,11 @@ const Dashboard = () => {
   };
 
   // ----------------------------
-  // 4) DELETE SWEET
+  // DELETE SWEET
   // ----------------------------
   const handleDeleteSweet = async (id) => {
     try {
       await deleteSweetApi(id);
-
       setSweets((prev) => prev.filter((s) => s._id !== id));
       alert("Sweet deleted successfully!");
     } catch (err) {
@@ -100,16 +99,14 @@ const Dashboard = () => {
   };
 
   // ----------------------------
-  // 5) PURCHASE SWEET
+  // PURCHASE SWEET
   // ----------------------------
   const handlePurchaseSweet = async (id) => {
     try {
       const res = await purchaseSweetApi(id);
 
       setSweets((prev) =>
-        prev.map((sweet) =>
-          sweet._id === id ? res.data.sweet : sweet
-        )
+        prev.map((sweet) => (sweet._id === id ? res.data.sweet : sweet))
       );
 
       alert("Purchase successful!");
@@ -120,7 +117,7 @@ const Dashboard = () => {
   };
 
   // ----------------------------
-  // 6) RESTOCK SWEET
+  // RESTOCK SWEET
   // ----------------------------
   const handleRestockSweet = async ({ id, amount }) => {
     try {
@@ -138,7 +135,7 @@ const Dashboard = () => {
   };
 
   // ----------------------------
-  // 7) SEARCH + FILTER
+  // SEARCH BY NAME
   // ----------------------------
   const handleSearch = async (name) => {
     setSearch(name);
@@ -147,10 +144,13 @@ const Dashboard = () => {
       const res = await searchSweetsApi(name);
       setSweets(res.data.sweets || []);
     } catch (err) {
-      console.error(err);
+      console.error("Search error: ", err);
     }
   };
 
+  // ----------------------------
+  // FILTER BY CATEGORY
+  // ----------------------------
   const handleCategoryFilter = async (category) => {
     setCategory(category);
 
@@ -158,7 +158,7 @@ const Dashboard = () => {
       const res = await searchSweetsApi("", category);
       setSweets(res.data.sweets || []);
     } catch (err) {
-      console.error(err);
+      console.error("Category filter error: ", err);
     }
   };
 
@@ -166,24 +166,22 @@ const Dashboard = () => {
   // RENDER UI
   // ----------------------------
   return (
-    <div>
-      <h1>Sweet Shop Dashboard</h1>
+    <div className="container py-4">
+      <h1 className="text-center mb-4" style={{ color: "#B05E00" }}>
+        🍬 Sweet Shop Dashboard
+      </h1>
 
-      {/* FILTERS */}
       <SweetFilter
         onSearch={handleSearch}
         onCategoryChange={handleCategoryFilter}
       />
 
-      {/* ADD SWEET */}
       <AddSweet onSubmit={handleAddSweet} />
 
-      {/* UPDATE SWEET */}
       {editingSweet && (
         <UpdateSweet sweet={editingSweet} onUpdate={handleUpdateSweet} />
       )}
 
-      {/* SWEETS GRID */}
       <SweetGrid
         sweets={currentSweets}
         onEdit={(sweet) => setEditingSweet(sweet)}
@@ -192,7 +190,6 @@ const Dashboard = () => {
         onPurchase={handlePurchaseSweet}
       />
 
-      {/* PAGINATION */}
       <SweetPagination
         page={page}
         nextPage={nextPage}
