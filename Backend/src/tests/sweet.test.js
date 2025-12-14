@@ -57,3 +57,21 @@ describe("Sweet API - Add Sweet", () => {
     expect(res.body.sweet).toHaveProperty("price", 100);
   });
 });
+
+describe("Sweet API - Get All Sweets", () => {
+  test("should return all sweets for authenticated users", async () => {
+    const res = await request(app)
+      .get("/api/sweets")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body.sweets)).toBe(true);
+  });
+
+  test("should block unauthenticated users", async () => {
+    const res = await request(app).get("/api/sweets");
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Unauthorized");
+  });
+});
