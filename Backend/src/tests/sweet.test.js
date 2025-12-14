@@ -275,3 +275,61 @@ describe("Sweet API - Purchase Sweet", () => {
     expect(res.body.message).toBe("Sweet not found");
   });
 });
+
+
+describe("Sweet API - Restock Sweet", () => {
+  let restockSweetId;
+
+  beforeAll(async () => {
+    const sweet = await Sweet.create({
+      name: "Milk Cake",
+      category: "Indian",
+      price: 120,
+      quantity: 5,
+    });
+
+    restockSweetId = sweet._id;
+  });
+
+  test("should NOT allow normal users to restock", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${restockSweetId}/restock`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({ amount: 10 });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.message).toBe("Admin access only");
+  });
+
+  test("should restock sweet for admin user", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${restockSweetId}/restock`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ amount: 10 });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweet.quantity).toBe(15); // 5 + 10
+  });
+
+  test("should return 400 if restock amount is invalid", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${restockSweetId}/restock`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ amount: -5 });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Invalid restock amount");
+  });
+
+  test("should return 404 if sweet not found", async () => {
+    const invalidId = new mongoose.Types.ObjectId();
+
+    const res = await request(app)
+      .post(`/api/sweets/${invalidId}/restock`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ amount: 5 });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Sweet not found");
+  });
+});
