@@ -2,9 +2,11 @@ import request from "supertest";
 import app from "../app.js";
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
+import dotenv from "dotenv";
+dotenv.config();  
 
 beforeAll(async () => {
-  await mongoose.connect("mongodb://127.0.0.1:27017/sweetshop_test");
+  await mongoose.connect(process.env.MONGO_URI);
   await User.deleteMany({});
 });
 
