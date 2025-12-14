@@ -46,3 +46,13 @@ export const updateSweet = async (id, data) => {
   await sweet.save();
   return sweet;
 };
+
+export const deleteSweet = async (id) => {
+  const sweet = await Sweet.findById(id);
+  if (!sweet) {
+    throw new Error("Sweet not found");
+  }
+
+  await sweet.deleteOne();
+  return true;
+};
