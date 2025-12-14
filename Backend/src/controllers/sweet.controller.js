@@ -1,6 +1,14 @@
+import {
+  addSweet,
+  getAllSweets,
+  searchSweets,
+  updateSweet,
+  deleteSweet,
+  purchaseSweet,
+  restockSweet
+} from "../services/sweet.service.js";
 
-import { addSweet, getAllSweets , searchSweets , updateSweet , deleteSweet , purchaseSweet , restockSweet } from "../services/sweet.service.js";
-
+// CREATE SWEET (Admin)
 export const createSweet = async (req, res) => {
   try {
     const sweet = await addSweet(req.body);
@@ -10,7 +18,7 @@ export const createSweet = async (req, res) => {
   }
 };
 
-
+// GET ALL SWEETS
 export const getSweets = async (req, res) => {
   try {
     const sweets = await getAllSweets();
@@ -20,6 +28,7 @@ export const getSweets = async (req, res) => {
   }
 };
 
+// SEARCH SWEETS
 export const searchSweetHandler = async (req, res) => {
   try {
     const sweets = await searchSweets(req.query);
@@ -28,6 +37,8 @@ export const searchSweetHandler = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// UPDATE SWEET (Admin)
 export const updateSweetHandler = async (req, res) => {
   try {
     const sweet = await updateSweet(req.params.id, req.body);
@@ -40,6 +51,7 @@ export const updateSweetHandler = async (req, res) => {
   }
 };
 
+// DELETE SWEET (Admin)
 export const deleteSweetHandler = async (req, res) => {
   try {
     await deleteSweet(req.params.id);
@@ -52,6 +64,7 @@ export const deleteSweetHandler = async (req, res) => {
   }
 };
 
+// PURCHASE SWEET (Authenticated User)
 export const purchaseSweetHandler = async (req, res) => {
   try {
     const sweet = await purchaseSweet(req.params.id);
@@ -67,9 +80,10 @@ export const purchaseSweetHandler = async (req, res) => {
   }
 };
 
+// RESTOCK SWEET (Admin)
 export const restockSweetHandler = async (req, res) => {
   try {
-    const amount = req.body.amount;
+    const amount = req.body.quantity; // <-- fixed (frontend sends quantity)
     const sweet = await restockSweet(req.params.id, amount);
 
     return res.status(200).json({ sweet });
