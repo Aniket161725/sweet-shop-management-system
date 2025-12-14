@@ -1,7 +1,18 @@
 import SweetGrid from "../components/sweets/SweetGrid";
 import SweetPagination from "../components/sweets/SweetPagination";
 import useSweets from "../hooks/useSweets";
-const { page, currentSweets, nextPage, prevPage, hasNext, hasPrev } = useSweets();
+import SweetFilter from "../components/sweets/SweetFilters";
+
+const {
+  page,
+  currentSweets,
+  nextPage,
+  prevPage,
+  hasNext,
+  hasPrev,
+  setSearch,
+  setCategory,
+} = useSweets();
 
 const mockSweets = Array.from({ length: 25 }).map((_, i) => ({
   name: `Sweet ${i + 1}`,
@@ -19,20 +30,28 @@ const Dashboard = () => {
   } = useSweets(mockSweets);
 
   return (
-    <div>
-      <h1>Sweet Shop Dashboard</h1>
+  <div>
+    <h1>Sweet Shop Dashboard</h1>
 
-      <SweetGrid sweets={currentSweets} />
+    {/* FILTERS GO HERE */}
+    <SweetFilter
+      onSearch={setSearch}
+      onCategoryChange={setCategory}
+    />
 
-      <SweetPagination
-        page={page}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        hasNext={true}
-        hasPrev={page > 1}
-      />
-    </div>
-  );
+    {/* SWEETS GRID */}
+    <SweetGrid sweets={currentSweets} />
+
+    {/* PAGINATION */}
+    <SweetPagination
+      page={page}
+      nextPage={nextPage}
+      prevPage={prevPage}
+      hasNext={hasNext}
+      hasPrev={hasPrev}
+    />
+  </div>
+);
 };
 
 export default Dashboard;
