@@ -9,9 +9,8 @@ const UpdateSweet = ({ sweet, onUpdate }) => {
     category: sweet.category,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,13 +18,25 @@ const UpdateSweet = ({ sweet, onUpdate }) => {
   };
 
   return (
-    <form data-testid="update-sweet-form" onSubmit={handleSubmit}>
-      <h2>Update Sweet</h2>
+    <form
+      data-testid="update-sweet-form"
+      onSubmit={handleSubmit}
+      className="p-4 rounded shadow"
+      style={{
+        background: "#FFF6CC",
+        border: "1px solid #F4E0A1",
+        marginTop: "20px",
+      }}
+    >
+      <h3 className="mb-3" style={{ color: "#B05E00" }}>
+        Update Sweet
+      </h3>
 
       <input
         type="text"
         name="name"
         placeholder="Sweet Name"
+        className="form-control mb-2"
         value={form.name}
         onChange={handleChange}
       />
@@ -33,8 +44,9 @@ const UpdateSweet = ({ sweet, onUpdate }) => {
       <input
         type="number"
         name="price"
-        value={form.price}
         placeholder="Price"
+        className="form-control mb-2"
+        value={form.price}
         onChange={handleChange}
       />
 
@@ -42,12 +54,14 @@ const UpdateSweet = ({ sweet, onUpdate }) => {
         type="text"
         name="image"
         placeholder="Image URL"
+        className="form-control mb-2"
         value={form.image}
         onChange={handleChange}
       />
 
       <select
         name="category"
+        className="form-select mb-3"
         value={form.category}
         onChange={handleChange}
       >
@@ -57,7 +71,9 @@ const UpdateSweet = ({ sweet, onUpdate }) => {
         <option value="Fried Sweet">Fried Sweet</option>
       </select>
 
-      <button type="submit">Save Changes</button>
+      <button className="btn btn-warning w-100" type="submit">
+        Save Changes
+      </button>
     </form>
   );
 };
