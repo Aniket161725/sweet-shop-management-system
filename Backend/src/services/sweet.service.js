@@ -72,3 +72,20 @@ export const purchaseSweet = async (id) => {
 
   return sweet;
 };
+
+
+export const restockSweet = async (id, amount) => {
+  const sweet = await Sweet.findById(id);
+  if (!sweet) {
+    throw new Error("Sweet not found");
+  }
+
+  if (!amount || amount <= 0) {
+    throw new Error("Invalid restock amount");
+  }
+
+  sweet.quantity += amount;
+  await sweet.save();
+
+  return sweet;
+};

@@ -1,5 +1,5 @@
 
-import { addSweet, getAllSweets , searchSweets , updateSweet , deleteSweet , purchaseSweet } from "../services/sweet.service.js";
+import { addSweet, getAllSweets , searchSweets , updateSweet , deleteSweet , purchaseSweet , restockSweet } from "../services/sweet.service.js";
 
 export const createSweet = async (req, res) => {
   try {
@@ -62,6 +62,23 @@ export const purchaseSweetHandler = async (req, res) => {
     }
     if (error.message === "Out of stock") {
       return res.status(400).json({ message: "Out of stock" });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const restockSweetHandler = async (req, res) => {
+  try {
+    const amount = req.body.amount;
+    const sweet = await restockSweet(req.params.id, amount);
+
+    return res.status(200).json({ sweet });
+  } catch (error) {
+    if (error.message === "Sweet not found") {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+    if (error.message === "Invalid restock amount") {
+      return res.status(400).json({ message: "Invalid restock amount" });
     }
     return res.status(500).json({ message: error.message });
   }
