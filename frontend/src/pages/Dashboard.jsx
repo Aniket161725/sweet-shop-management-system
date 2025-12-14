@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 import SweetGrid from "../components/sweets/SweetGrid";
 import SweetPagination from "../components/sweets/SweetPagination";
 import SweetFilter from "../components/sweets/SweetFilters";
@@ -7,6 +10,7 @@ import AddSweet from "../components/sweets/AddSweet";
 import UpdateSweet from "../components/sweets/UpdateSweet";
 
 import useSweets from "../hooks/useSweets";
+import { useAuth } from "../hooks/useAuth2";
 
 import {
   getAllSweetsApi,
@@ -17,13 +21,12 @@ import {
   restockSweetApi,
   searchSweetsApi,
 } from "../services/sweetApi";
-// import { get } from "mongoose";
 
 const Dashboard = () => {
+    const { isAdmin } = useAuth();
   const [sweets, setSweets] = useState([]);
   const [editingSweet, setEditingSweet] = useState(null);
 
-  // hook for pagination + client-side slicing
   const {
     page,
     currentSweets,
@@ -35,10 +38,8 @@ const Dashboard = () => {
     setCategory,
   } = useSweets(sweets);
 
-  console.log("getAllSweetsApi" + getAllSweetsApi);
-
   // ----------------------------
-  // LOAD SWEETS FROM BACKEND
+  // LOAD SWEETS
   // ----------------------------
   const loadSweets = async () => {
     try {
@@ -63,7 +64,6 @@ const Dashboard = () => {
       setSweets((prev) => [...prev, res.data.sweet]);
       alert("Sweet added successfully!");
     } catch (err) {
-      console.error(err);
       alert("Failed to add sweet");
     }
   };
@@ -82,7 +82,6 @@ const Dashboard = () => {
       setEditingSweet(null);
       alert("Sweet updated successfully!");
     } catch (err) {
-      console.error(err);
       alert("Update failed");
     }
   };
@@ -94,9 +93,8 @@ const Dashboard = () => {
     try {
       await deleteSweetApi(id);
       setSweets((prev) => prev.filter((s) => s._id !== id));
-      alert("Sweet deleted successfully!");
+      alert("Sweet deleted");
     } catch (err) {
-      console.error(err);
       alert("Delete failed");
     }
   };
@@ -107,100 +105,101 @@ const Dashboard = () => {
   const handlePurchaseSweet = async (id) => {
     try {
       const res = await purchaseSweetApi(id);
-
       setSweets((prev) =>
-        prev.map((sweet) => (sweet._id === id ? res.data.sweet : sweet))
+        prev.map((s) => (s._id === id ? res.data.sweet : s))
       );
-
       alert("Purchase successful!");
     } catch (err) {
-      console.error(err);
       alert(err.response?.data?.message || "Purchase failed");
     }
   };
 
   // ----------------------------
-  // RESTOCK SWEET
+  // RESTOCK
   // ----------------------------
   const handleRestockSweet = async ({ id, amount }) => {
     try {
       const res = await restockSweetApi(id, amount);
-
       setSweets((prev) =>
         prev.map((s) => (s._id === id ? res.data.sweet : s))
       );
-
-      alert("Restocked successfully!");
+      alert("Restocked!");
     } catch (err) {
-      console.error(err);
       alert("Restock failed");
     }
   };
 
   // ----------------------------
-  // SEARCH BY NAME
+  // SEARCH
   // ----------------------------
   const handleSearch = async (name) => {
     setSearch(name);
-
     try {
       const res = await searchSweetsApi(name);
       setSweets(res.data.sweets || []);
-    } catch (err) {
-      console.error("Search error: ", err);
-    }
+    } catch (err) {}
   };
 
   // ----------------------------
-  // FILTER BY CATEGORY
+  // CATEGORY FILTER
   // ----------------------------
   const handleCategoryFilter = async (category) => {
     setCategory(category);
-
     try {
       const res = await searchSweetsApi("", category);
       setSweets(res.data.sweets || []);
-    } catch (err) {
-      console.error("Category filter error: ", err);
-    }
+    } catch (err) {}
   };
 
   // ----------------------------
-  // RENDER UI
+  // UI
   // ----------------------------
   return (
-    <div className="container py-4">
-      <h1 className="text-center mb-4" style={{ color: "#B05E00" }}>
-        🍬 Sweet Shop Dashboard
-      </h1>
+    <>
+      {/* NAVBAR */}
+      <Navbar />
 
-      <SweetFilter
-        onSearch={handleSearch}
-        onCategoryChange={handleCategoryFilter}
-      />
+      <div className="container py-4" style={{ minHeight: "80vh" }}>
+        <h1 className="text-center mb-4" style={{ color: "#B05E00" }}>
+          🍬 
+        </h1>
 
-      <AddSweet onSubmit={handleAddSweet} />
+        {/* FILTERS */}
+        <SweetFilter
+          onSearch={handleSearch}
+          onCategoryChange={handleCategoryFilter}
+        />
 
-      {editingSweet && (
-        <UpdateSweet sweet={editingSweet} onUpdate={handleUpdateSweet} />
-      )}
+        {/* -------- ADD FORM (ADMIN ONLY) -------- */}
+        {isAdmin && <AddSweet onSubmit={handleAddSweet} />}
 
-      <SweetGrid
-        sweets={currentSweets}
-        onEdit={(sweet) => setEditingSweet(sweet)}
-        onDelete={handleDeleteSweet}
-        onRestock={handleRestockSweet}
-        onPurchase={handlePurchaseSweet}
-      />
+        {/* -------- UPDATE FORM (ADMIN ONLY) -------- */}
+        {editingSweet && isAdmin && (
+          <UpdateSweet sweet={editingSweet} onUpdate={handleUpdateSweet} />
+        )}
 
-      <SweetPagination
-        page={page}
-        nextPage={nextPage}
-        prevPage={prevPage}
-        hasNext={hasNext}
-        hasPrev={hasPrev}
-      />
-    </div>
+        {/* -------- SWEETS GRID -------- */}
+        <SweetGrid
+          sweets={currentSweets}
+          onEdit={(s) => isAdmin && setEditingSweet(s)}
+          onDelete={isAdmin ? handleDeleteSweet : null}
+          onRestock={isAdmin ? handleRestockSweet : null}
+          onPurchase={handlePurchaseSweet}  // users can still purchase
+        />
+
+        {/* PAGINATION */}
+        <SweetPagination
+          page={page}
+          nextPage={nextPage}
+          prevPage={prevPage}
+          hasNext={hasNext}
+          hasPrev={hasPrev}
+        />
+      </div>
+
+      {/* FOOTER */}
+      <Footer />
+    </>
   );
 };
 
