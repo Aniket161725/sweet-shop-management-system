@@ -1,20 +1,27 @@
 const SweetFilter = ({ onSearch, onCategoryChange }) => {
   return (
-    <div style={{ marginBottom: "20px" }}>
-      
-      {/* Search Input */}
+    <div
+      className="p-3 rounded mb-4 d-flex gap-3"
+      style={{
+        background: "#FFF3C4",
+        border: "1px solid #F2E6A7",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+      }}
+    >
       <input
         type="text"
-        placeholder="Search sweets..."
-        onChange={(e) => onSearch && onSearch(e.target.value)}
-        style={{ padding: "8px", marginRight: "10px" }}
+        placeholder="🔍 Search sweets..."
+        className="form-control"
+        style={{ background: "#FFFBEA" }}
+        onChange={(e) => onSearch(e.target.value)}
       />
 
-      {/* Category Dropdown */}
       <select
-        onChange={(e) => onCategoryChange && onCategoryChange(e.target.value)}
+        className="form-select"
+        style={{ background: "#FFFBEA" }}
+        onChange={(e) => onCategoryChange(e.target.value)}
       >
-        <option value="">All Categories</option>
+        <option value="">🍬 All Categories</option>
         <option value="Milk-based">Milk-based</option>
         <option value="Gram Flour">Gram Flour</option>
         <option value="Dry Fruit">Dry Fruit</option>
@@ -27,7 +34,6 @@ const SweetFilter = ({ onSearch, onCategoryChange }) => {
         <option value="Agra Special">Agra Special</option>
         <option value="Maharashtrian Sweet">Maharashtrian Sweet</option>
       </select>
-
     </div>
   );
 };
