@@ -75,3 +75,46 @@ describe("Sweet API - Get All Sweets", () => {
     expect(res.body.message).toBe("Unauthorized");
   });
 });
+
+
+describe("Sweet API - Search Sweets", () => {
+  test("should search sweets by name", async () => {
+    // create sample sweets
+    await Sweet.create([
+      { name: "Gulab Jamun", category: "Indian", price: 100, quantity: 20 },
+      { name: "Rasgulla", category: "Indian", price: 80, quantity: 15 }
+    ]);
+
+    const res = await request(app)
+      .get("/api/sweets/search?name=Gulab")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweets.length).toBe(1);
+    expect(res.body.sweets[0].name).toBe("Gulab Jamun");
+  });
+
+  test("should search sweets by category", async () => {
+    const res = await request(app)
+      .get("/api/sweets/search?category=Indian")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweets.length).toBeGreaterThan(0);
+  });
+
+  test("should search sweets by price range", async () => {
+    const res = await request(app)
+      .get("/api/sweets/search?minPrice=70&maxPrice=90")
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    // Rasgulla = 80 → should match
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweets[0].price).toBe(80);
+  });
+
+  test("should block unauthenticated users from searching", async () => {
+    const res = await request(app).get("/api/sweets/search?name=Gulab");
+    expect(res.statusCode).toBe(401);
+  });
+});
