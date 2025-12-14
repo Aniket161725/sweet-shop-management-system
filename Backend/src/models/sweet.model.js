@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const sweetSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -8,3 +10,7 @@ const sweetSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const Sweet = mongoose.model("Sweet", sweetSchema);
+
+export default Sweet;

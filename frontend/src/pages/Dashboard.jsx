@@ -17,6 +17,7 @@ import {
   restockSweetApi,
   searchSweetsApi,
 } from "../services/sweetApi";
+// import { get } from "mongoose";
 
 const Dashboard = () => {
   const [sweets, setSweets] = useState([]);
@@ -33,6 +34,8 @@ const Dashboard = () => {
     setSearch,
     setCategory,
   } = useSweets(sweets);
+
+  console.log("getAllSweetsApi" + getAllSweetsApi);
 
   // ----------------------------
   // LOAD SWEETS FROM BACKEND

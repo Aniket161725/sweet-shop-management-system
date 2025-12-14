@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
 import Login from "./pages/Login";
@@ -14,13 +14,16 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Routes */}
+
+          {/* ---------- PUBLIC ROUTES ---------- */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Redirect root → login */}
+          <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Protected (User must be logged in) */}
+          {/* ---------- PROTECTED ROUTES ---------- */}
+          {/* Only logged-in users can access Home */}
           <Route
             path="/home"
             element={
@@ -30,7 +33,17 @@ function App() {
             }
           />
 
-          {/* Admin Only Routes */}
+          {/* Only logged-in users can access Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ---------- ADMIN ONLY ROUTES ---------- */}
           <Route
             path="/admin"
             element={
@@ -39,6 +52,10 @@ function App() {
               </AdminRoute>
             }
           />
+
+          {/* 404 Page */}
+          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -185,7 +185,7 @@ const sweets = [
 
 const seedSweets = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URL);
     console.log("🌱 Seeding sweets...");
 
     await Sweet.deleteMany({});

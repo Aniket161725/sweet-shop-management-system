@@ -15,9 +15,9 @@ const Register = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    setFormData({ 
+      ...formData, 
+      [e.target.name]: e.target.value 
     });
   };
 
@@ -25,21 +25,21 @@ const Register = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+      return alert("Passwords do not match!");
     }
 
     try {
+      // Register → backend returns: { user, token }
       const res = await api.post("/auth/register", {
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
 
-      // Auto-login after registration
+      // Save user + token in localStorage
       login(res.data.user, res.data.token);
 
-      navigate("/home");
+      navigate("/dashboard"); // Go to dashboard
     } catch (err) {
       alert(err.response?.data?.message || "Registration failed.");
     }
@@ -53,7 +53,7 @@ const Register = () => {
         overflow: "hidden",
       }}
     >
-      {/* Floating Sweet Elements */}
+      {/* Floating Circles */}
       <div
         className="position-absolute rounded-circle"
         style={{
@@ -101,7 +101,7 @@ const Register = () => {
           Join the Sweet Shop System
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit}>
 
           <div className="mb-3">
             <label className="form-label fw-semibold">Full Name</label>
@@ -175,10 +175,7 @@ const Register = () => {
 
         <p className="text-center mt-4">
           Already have an account?{" "}
-          <a
-            href="/login"
-            style={{ color: "#cc8d00", fontWeight: "600" }}
-          >
+          <a href="/login" style={{ color: "#cc8d00", fontWeight: "600" }}>
             Login
           </a>
         </p>

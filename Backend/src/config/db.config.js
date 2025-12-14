@@ -4,15 +4,12 @@ dotenv.config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("MongoDB connected successfully");
+    await mongoose.connect(process.env.MONGO_URL); // no options needed
+    console.log("Database connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1); // Exit the process with failure
+    process.exit(1);
   }
-}   
+};
 
-export default connectDB; 
+export {connectDB}; 

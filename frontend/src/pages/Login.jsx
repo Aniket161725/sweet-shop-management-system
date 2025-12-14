@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../hooks/useAuth2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth();
@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const res = await api.post("/auth/login", { email, password });
       login(res.data.user, res.data.token);
-      navigate("/home");
+      navigate("/dashboard");
     } catch (error) {
       alert("Login failed. Check email or password.");
     }
@@ -29,7 +29,7 @@ const Login = () => {
         overflow: "hidden",
       }}
     >
-      {/* Floating Sweet Circles */}
+      {/* Floating Elements */}
       <div
         className="position-absolute rounded-circle"
         style={{
@@ -119,6 +119,17 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        {/* 🔥 Switch to Register HERE */}
+        <p className="text-center mt-4">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            style={{ color: "#cc8d00", fontWeight: "600" }}
+          >
+            Register
+          </Link>
+        </p>
       </div>
 
       {/* Animations */}

@@ -7,22 +7,23 @@ import { adminOnly } from "./middlewares/role.middleware.js";
 
 
 
-const allowedOrigins = ["http://localhost:3000"];
-
 import userRoutes from "./routes/user.route.js";
 import sweetRoutes from "./routes/sweet.route.js";
 
 const app = express();
 
 
-
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: [
+      "http://localhost:3000",
+      "http://192.168.1.4:3000"   // allow local network React app
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true, 
+    credentials: true,
   })
 );
+
 
 
 app.use(express.json());
