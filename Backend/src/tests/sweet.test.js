@@ -118,3 +118,60 @@ describe("Sweet API - Search Sweets", () => {
     expect(res.statusCode).toBe(401);
   });
 });
+
+
+describe("Sweet API - Update Sweet", () => {
+
+  let sweetId;
+
+  beforeAll(async () => {
+    // create a sweet to update
+    const sweet = await Sweet.create({
+      name: "Old Barfi",
+      category: "Indian",
+      price: 100,
+      quantity: 20,
+    });
+
+    sweetId = sweet._id;
+  });
+
+  test("should NOT allow normal users to update sweet", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({ name: "New Barfi" });
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.message).toBe("Admin access only");
+  });
+
+  test("should update sweet for admin user", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({
+        name: "New Barfi",
+        category: "Indian",
+        price: 120,
+        quantity: 50,
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweet.name).toBe("New Barfi");
+    expect(res.body.sweet.price).toBe(120);
+  });
+
+  test("should return 404 if sweet not found", async () => {
+    const invalidId = new mongoose.Types.ObjectId();
+
+    const res = await request(app)
+      .put(`/api/sweets/${invalidId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ name: "Does Not Matter" });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Sweet not found");
+  });
+
+});
