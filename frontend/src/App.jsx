@@ -1,7 +1,13 @@
-export default function App() {
+import { AuthProvider } from "./context/AuthContext";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+
+function App() {
   return (
-    <div>
-      <h1>hello world</h1>
-    </div>
+    <AuthProvider>
+      <Login />
+    </AuthProvider>
   );
 }
+
+export default App;
