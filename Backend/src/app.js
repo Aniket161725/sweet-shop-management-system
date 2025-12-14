@@ -5,9 +5,13 @@ import cors from "cors";
 import { authMiddleware } from "./middlewares/user.middleware.js";
 import { adminOnly } from "./middlewares/role.middleware.js";
 
+
+
 const allowedOrigins = ["http://localhost:3000"];
 
 import userRoutes from "./routes/user.route.js";
+import sweetRoutes from "./routes/sweet.routes.js";
+
 const app = express();
 
 
@@ -37,6 +41,7 @@ app.get("/admin-only", authMiddleware, adminOnly, (req, res) => {
 
 
 app.use("/api/auth", userRoutes);
+pp.use("/api/sweets", sweetRoutes);
 
 app.get("/ping", (req, res) => {
   return res.status(200).json({ message: "pong" });
