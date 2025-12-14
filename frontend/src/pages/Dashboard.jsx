@@ -1,6 +1,7 @@
 import SweetGrid from "../components/sweets/SweetGrid";
 import SweetPagination from "../components/sweets/SweetPagination";
 import useSweets from "../hooks/useSweets";
+const { page, currentSweets, nextPage, prevPage, hasNext, hasPrev } = useSweets();
 
 const mockSweets = Array.from({ length: 25 }).map((_, i) => ({
   name: `Sweet ${i + 1}`,
