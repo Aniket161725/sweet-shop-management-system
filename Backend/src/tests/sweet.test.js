@@ -221,3 +221,57 @@ describe("Sweet API - Delete Sweet", () => {
   });
 });
 
+describe("Sweet API - Purchase Sweet", () => {
+  let purchaseSweetId;
+
+  beforeAll(async () => {
+    const sweet = await Sweet.create({
+      name: "Choco Bite",
+      category: "Western",
+      price: 30,
+      quantity: 2,
+    });
+    purchaseSweetId = sweet._id;
+  });
+
+  test("should NOT allow unauthenticated users to purchase", async () => {
+    const res = await request(app).post(`/api/sweets/${purchaseSweetId}/purchase`);
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toBe("Unauthorized");
+  });
+
+  test("should successfully purchase sweet and decrease quantity", async () => {
+    const res = await request(app)
+      .post(`/api/sweets/${purchaseSweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.sweet.quantity).toBe(1); // First purchase reduces from 2 -> 1
+  });
+
+  test("should throw out-of-stock error when quantity reaches zero", async () => {
+    // Second purchase (1 -> 0)
+    await request(app)
+      .post(`/api/sweets/${purchaseSweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    // Third purchase should fail (0 -> error)
+    const res = await request(app)
+      .post(`/api/sweets/${purchaseSweetId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Out of stock");
+  });
+
+  test("should return 404 if sweet not found", async () => {
+    const invalidId = new mongoose.Types.ObjectId();
+
+    const res = await request(app)
+      .post(`/api/sweets/${invalidId}/purchase`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Sweet not found");
+  });
+});
