@@ -37,7 +37,8 @@ test("renders 10 sweets on first page", () => {
     </BrowserRouter>
   );
 
-  expect(screen.getAllByText(/Sweet/i).length).toBe(10);
+expect(screen.getAllByText(/^Sweet \d+$/i).length).toBe(10);
+
 });
 
 test("renders pagination buttons", () => {
