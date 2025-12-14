@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import SweetFilter from "../components/sweets/SweetFilter";
+import SweetFilter from "../components/sweets/SweetFilters";
 
 test("renders search input", () => {
   render(<SweetFilter />);
@@ -8,7 +8,7 @@ test("renders search input", () => {
 
 test("renders category dropdown", () => {
   render(<SweetFilter />);
-  expect(screen.getByText(/all categories/i)).toBeInTheDocument();
+  expect(screen.getByRole("combobox")).toBeInTheDocument();
 });
 
 test("calls onSearch when typing", () => {
@@ -16,13 +16,13 @@ test("calls onSearch when typing", () => {
   render(<SweetFilter onSearch={mockSearch} />);
 
   fireEvent.change(screen.getByPlaceholderText(/search sweets/i), {
-    target: { value: "gulab" },
+    target: { value: "barfi" },
   });
 
-  expect(mockSearch).toHaveBeenCalledWith("gulab");
+  expect(mockSearch).toHaveBeenCalledWith("barfi");
 });
 
-test("calls onCategory when selecting category", () => {
+test("calls onCategoryChange when selecting category", () => {
   const mockCategory = jest.fn();
   render(<SweetFilter onCategoryChange={mockCategory} />);
 
