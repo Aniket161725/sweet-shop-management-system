@@ -3,9 +3,11 @@ import app from "../app.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import Sweet from "../models/sweet.model.js";
+import dotenv from "dotenv";
+dotenv.config(); 
 
 beforeAll(async () => {
-  await mongoose.connect("mongodb://127.0.0.1:27017/sweetshop_test");
+  await mongoose.connect(process.env.MONGO_URI);
   await Sweet.deleteMany({});
 });
 
