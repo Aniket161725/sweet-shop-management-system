@@ -12,14 +12,20 @@ const AddSweet = ({ onSubmit }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // TDD VERSION — NO API CALLS, ONLY CALLBACK
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit && onSubmit(form);
+    if (onSubmit) {
+      onSubmit(form); // required for TDD tests to pass
+    }
   };
 
   return (
-    <form data-testid="add-sweet-form" onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-
+    <form
+      data-testid="add-sweet-form"
+      onSubmit={handleSubmit}
+      style={{ marginTop: "20px" }}
+    >
       <h2>Add New Sweet</h2>
 
       <input
@@ -65,7 +71,6 @@ const AddSweet = ({ onSubmit }) => {
       <button type="submit" className="btn btn-success">
         Add Sweet
       </button>
-
     </form>
   );
 };

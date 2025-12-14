@@ -1,6 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import AddSweet from "../components/sweets/AddSweet";
 
+beforeAll(() => {
+  window.alert = jest.fn(); // mock alert so it doesn't crash tests
+});
+
 test("renders Add Sweet form heading", () => {
   render(<AddSweet />);
   expect(screen.getByText(/add new sweet/i)).toBeInTheDocument();
