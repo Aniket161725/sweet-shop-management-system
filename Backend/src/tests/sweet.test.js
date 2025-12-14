@@ -175,3 +175,49 @@ describe("Sweet API - Update Sweet", () => {
   });
 
 });
+
+
+describe("Sweet API - Delete Sweet", () => {
+  let sweetId;
+
+  beforeAll(async () => {
+    // Create a sweet to delete
+    const sweet = await Sweet.create({
+      name: "Delete Laddu",
+      category: "Indian",
+      price: 60,
+      quantity: 10,
+    });
+    sweetId = sweet._id;
+  });
+
+  test("should NOT allow normal user to delete sweet", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.message).toBe("Admin access only");
+  });
+
+  test("should delete sweet for admin user", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("Sweet deleted successfully");
+  });
+
+  test("should return 404 if sweet not found", async () => {
+    const invalidId = new mongoose.Types.ObjectId();
+
+    const res = await request(app)
+      .delete(`/api/sweets/${invalidId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Sweet not found");
+  });
+});
+
