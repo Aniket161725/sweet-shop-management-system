@@ -1,3 +1,16 @@
+jest.mock("axios", () => {
+  return {
+    create: () => ({
+      interceptors: {
+        request: { use: jest.fn() },
+      },
+      post: jest.fn().mockResolvedValue({
+        data: { message: "User registered" },
+      }),
+    }),
+  };
+});
+
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext";
@@ -18,34 +31,36 @@ test("renders register fields", () => {
 
   expect(screen.getByPlaceholderText(/your name/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-  expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+  expect(screen.getByPlaceholderText(/^password$/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/confirm password/i)).toBeInTheDocument();
 });
 
 test("allows typing in form fields", () => {
   renderUI();
 
-  const nameInput = screen.getByPlaceholderText(/your name/i);
-  const emailInput = screen.getByPlaceholderText(/email/i);
+  fireEvent.change(screen.getByPlaceholderText(/your name/i), {
+    target: { value: "aniket" },
+  });
 
-  fireEvent.change(nameInput, { target: { value: "aniket" } });
-  fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+  fireEvent.change(screen.getByPlaceholderText(/email/i), {
+    target: { value: "a@a.com" },
+  });
 
-  expect(nameInput.value).toBe("aniket");
-  expect(emailInput.value).toBe("test@example.com");
+  expect(screen.getByPlaceholderText(/your name/i).value).toBe("aniket");
+  expect(screen.getByPlaceholderText(/email/i).value).toBe("a@a.com");
 });
 
-test("shows alert if passwords do not match", () => {
-  window.alert = jest.fn(); // mock alert
+test("shows alert when passwords do not match", () => {
+  window.alert = jest.fn();
 
   renderUI();
 
-  fireEvent.change(screen.getByPlaceholderText(/password/i), {
+  fireEvent.change(screen.getByPlaceholderText(/^password$/i), {
     target: { value: "123456" },
   });
 
   fireEvent.change(screen.getByPlaceholderText(/confirm password/i), {
-    target: { value: "999999" },
+    target: { value: "000000" },
   });
 
   fireEvent.click(screen.getByText(/register/i));

@@ -1,26 +1,28 @@
 import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 
-const useSweets = () => {
-  const [sweets, setSweets] = useState([]);   // NEW: real data from backend
+const useSweets = (initialSweets = null) => {
+  const [sweets, setSweets] = useState(initialSweets || []);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // NEW: Fetch sweets from backend
   useEffect(() => {
+    if (initialSweets && initialSweets.length > 0) return;
+
     const fetchSweets = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/sweets");
-        setSweets(res.data.sweets);
+        const res = await axios.get("/api/sweets");
+        setSweets(res.data.sweets || res.data);
       } catch (err) {
-        console.log("Error fetching sweets:", err);
+        if (process.env.NODE_ENV === "test") {
+          console.log("Error fetching sweets:", err);
+        }
       }
     };
 
     fetchSweets();
-  }, []);
+  }, [initialSweets]);
 
-  // Pagination logic — your original logic, extended
   const currentSweets = useMemo(() => {
     const start = (page - 1) * pageSize;
     return sweets.slice(start, start + pageSize);
@@ -42,10 +44,7 @@ const useSweets = () => {
     page,
     nextPage,
     prevPage,
-    hasNext: page < maxPage,
-    hasPrev: page > 1,
   };
 };
 
 export default useSweets;
-

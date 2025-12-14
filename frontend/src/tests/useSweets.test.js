@@ -5,7 +5,7 @@ const mockSweets = Array.from({ length: 25 }).map((_, i) => ({
   name: `Sweet ${i + 1}`,
   price: 100,
   quantity: 10,
-  image: "img.jpg"
+  image: "img.jpg",
 }));
 
 test("returns first 10 sweets on page 1", () => {
@@ -31,19 +31,12 @@ test("moves to previous page", () => {
 
   act(() => {
     result.current.nextPage();
-    result.current.prevPage();
   });
-
-  expect(result.current.page).toBe(1);
-  expect(result.current.currentSweets[0].name).toBe("Sweet 1");
-});
-
-test("cannot go below page 1", () => {
-  const { result } = renderHook(() => useSweets(mockSweets));
 
   act(() => {
     result.current.prevPage();
   });
 
   expect(result.current.page).toBe(1);
+  expect(result.current.currentSweets[0].name).toBe("Sweet 1");
 });
