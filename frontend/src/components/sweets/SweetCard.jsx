@@ -1,16 +1,13 @@
-import axios from "axios";
 import { useState } from "react";
+import { purchaseSweet } from "../../services/sweetService";
 
 const SweetCard = ({ sweet }) => {
   const [quantity, setQuantity] = useState(sweet.quantity);
 
   const handlePurchase = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/sweets/${sweet._id}/purchase`
-      );
-
-      setQuantity((prev) => prev - 1);
+      await purchaseSweet(sweet._id);
+      setQuantity(q => q - 1);
       alert("Sweet purchased successfully!");
     } catch (err) {
       console.log(err);
