@@ -31,3 +31,18 @@ export const searchSweets = async ({ name, category, minPrice, maxPrice }) => {
   const sweets = await Sweet.find(filters);
   return sweets;
 };
+
+export const updateSweet = async (id, data) => {
+  const sweet = await Sweet.findById(id);
+  if (!sweet) {
+    throw new Error("Sweet not found");
+  }
+
+  sweet.name = data.name ?? sweet.name;
+  sweet.category = data.category ?? sweet.category;
+  sweet.price = data.price ?? sweet.price;
+  sweet.quantity = data.quantity ?? sweet.quantity;
+
+  await sweet.save();
+  return sweet;
+};
