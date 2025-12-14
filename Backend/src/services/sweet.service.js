@@ -56,3 +56,19 @@ export const deleteSweet = async (id) => {
   await sweet.deleteOne();
   return true;
 };
+
+export const purchaseSweet = async (id) => {
+  const sweet = await Sweet.findById(id);
+  if (!sweet) {
+    throw new Error("Sweet not found");
+  }
+
+  if (sweet.quantity <= 0) {
+    throw new Error("Out of stock");
+  }
+
+  sweet.quantity -= 1;
+  await sweet.save();
+
+  return sweet;
+};

@@ -1,5 +1,5 @@
 
-import { addSweet, getAllSweets , searchSweets , updateSweet , deleteSweet } from "../services/sweet.service.js";
+import { addSweet, getAllSweets , searchSweets , updateSweet , deleteSweet , purchaseSweet } from "../services/sweet.service.js";
 
 export const createSweet = async (req, res) => {
   try {
@@ -47,6 +47,21 @@ export const deleteSweetHandler = async (req, res) => {
   } catch (error) {
     if (error.message === "Sweet not found") {
       return res.status(404).json({ message: "Sweet not found" });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const purchaseSweetHandler = async (req, res) => {
+  try {
+    const sweet = await purchaseSweet(req.params.id);
+    return res.status(200).json({ sweet });
+  } catch (error) {
+    if (error.message === "Sweet not found") {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+    if (error.message === "Out of stock") {
+      return res.status(400).json({ message: "Out of stock" });
     }
     return res.status(500).json({ message: error.message });
   }

@@ -5,6 +5,8 @@ import { adminOnly } from "../middlewares/role.middleware.js";
 import { searchSweetHandler } from "../controllers/sweet.controller.js";
 import { updateSweetHandler } from "../controllers/sweet.controller.js";
 import { deleteSweetHandler } from "../controllers/sweet.controller.js";
+import { purchaseSweetHandler } from "../controllers/sweet.controller.js";
+
 
 
 
@@ -17,6 +19,7 @@ router.get("/", authMiddleware, getSweets);
 router.get("/search", authMiddleware, searchSweetHandler);
 router.put("/:id", authMiddleware, adminOnly, updateSweetHandler);
 router.delete("/:id", authMiddleware, adminOnly, deleteSweetHandler);
+router.post("/:id/purchase", authMiddleware, purchaseSweetHandler);
 
 export default router;
 
