@@ -4,8 +4,14 @@ import axios from "axios";
 const useSweets = (initialSweets = null) => {
   const [sweets, setSweets] = useState(initialSweets || []);
   const [page, setPage] = useState(1);
+
+  // NEW states for search + category filter
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+
   const pageSize = 10;
 
+  // Fetch sweets when not passed from props
   useEffect(() => {
     if (initialSweets && initialSweets.length > 0) return;
 
@@ -15,7 +21,7 @@ const useSweets = (initialSweets = null) => {
         setSweets(res.data.sweets || res.data);
       } catch (err) {
         if (process.env.NODE_ENV === "test") {
-          console.log("Error fetching sweets:", err);
+          console.error("Error fetching sweets:", err);
         }
       }
     };
@@ -23,13 +29,28 @@ const useSweets = (initialSweets = null) => {
     fetchSweets();
   }, [initialSweets]);
 
+  // FILTERED SWEETS FIRST (search + category)
+  const filteredSweets = useMemo(() => {
+    return sweets.filter((item) => {
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchesCategory = category ? item.category === category : true;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [sweets, search, category]);
+
+  // PAGINATION BASED ON FILTERED SWEETS
+  const maxPage = Math.ceil(filteredSweets.length / pageSize);
+
   const currentSweets = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return sweets.slice(start, start + pageSize);
-  }, [page, sweets]);
+    return filteredSweets.slice(start, start + pageSize);
+  }, [page, filteredSweets]);
 
-  const maxPage = Math.ceil(sweets.length / pageSize);
-
+  // PAGINATION FUNCTIONS
   const nextPage = () => {
     if (page < maxPage) setPage(page + 1);
   };
@@ -39,11 +60,20 @@ const useSweets = (initialSweets = null) => {
   };
 
   return {
-    sweets,
-    currentSweets,
+    sweets,            // full list
+    filteredSweets,    // filtered list
+    currentSweets,     // paginated filtered list
+
     page,
     nextPage,
     prevPage,
+
+    hasNext: page < maxPage,
+    hasPrev: page > 1,
+
+    // setters for filter component
+    setSearch,
+    setCategory,
   };
 };
 
